@@ -1,7 +1,6 @@
 #include "engine.hpp"
 #include "util.hpp"
 
-#include <SDL2/SDL_metal.h>
 #include <SDL2/SDL_syswm.h>
 
 #include <iostream>
@@ -48,12 +47,6 @@ namespace metal_3_example {
 
         _command_queue = [_device newCommandQueue];
 
-        NSError* error;
-        auto library = [_device newLibraryWithFile: @"library.metallib" error: &error];
-        if(error) {
-
-        }
-
         create_pipeline();
     }
 
@@ -65,11 +58,32 @@ namespace metal_3_example {
     }
 
     void Engine::create_pipeline() noexcept {
+        NSError* error;
 
+        auto library = [_device newLibraryWithFile: @"shaders.metallib" error: &error];
+        util::panic_if_failed(error, "MTLDevice::newLibraryWithFile");
+
+        auto mesh_function = [library newFunctionWithName: @"mesh_function"];
+        auto fragment_function = [library newFunctionWithName:@"fragment_function"];
+
+        auto mesh_render_pipeline_descriptor = [[MTLMeshRenderPipelineDescriptor alloc] init];
+        mesh_render_pipeline_descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+        mesh_render_pipeline_descriptor.meshFunction = mesh_function;
+        mesh_render_pipeline_descriptor.fragmentFunction = fragment_function;
+
+        _render_pipeline_state = [_device newRenderPipelineStateWithMeshDescriptor: mesh_render_pipeline_descriptor options: MTLPipelineOptionNone reflection: nullptr error: &error];
+        util::panic_if_failed(error, "MTLDevice::newRenderPipelineStateWithMeshDescriptor");
+
+        [mesh_render_pipeline_descriptor release];
+
+        [fragment_function release];
+        [mesh_function release];
+
+        [library release];
     }
 
     void Engine::destroy_pipeline() noexcept {
-
+        [_render_pipeline_state release];
     }
 
     void Engine::render_frame() noexcept {
@@ -84,10 +98,11 @@ namespace metal_3_example {
 
             auto command_buffer = [_command_queue commandBuffer];
 
-            auto encoder = [command_buffer renderCommandEncoderWithDescriptor: render_pass_descriptor];
-            [encoder endEncoding];
+            auto render_encoder = [command_buffer renderCommandEncoderWithDescriptor: render_pass_descriptor];
 
-
+            [render_encoder setRenderPipelineState:_render_pipeline_state];
+            [render_encoder drawMeshThreadgroups:MTLSizeMake(1, 1, 1) threadsPerObjectThreadgroup:MTLSizeMake(1, 1, 1) threadsPerMeshThreadgroup:MTLSizeMake(1, 1, 1)];
+            [render_encoder endEncoding];
 
             [command_buffer presentDrawable:surface];
             [command_buffer commit];

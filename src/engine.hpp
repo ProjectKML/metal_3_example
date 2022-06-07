@@ -17,6 +17,7 @@ namespace metal_3_example {
 
         id<MTLDevice> _device;
         id<MTLCommandQueue> _command_queue;
+        id<MTLRenderPipelineState> _render_pipeline_state;
 
         void create_window() noexcept;
         void destroy_window() noexcept;
