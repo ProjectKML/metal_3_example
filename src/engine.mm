@@ -1,4 +1,5 @@
 #include "engine.hpp"
+#import "metal_util.hpp"
 #include "util.hpp"
 
 #include <SDL2/SDL_syswm.h>
@@ -61,7 +62,7 @@ namespace metal_3_example {
         NSError* error;
 
         auto library = [_device newLibraryWithFile: @"shaders.metallib" error: &error];
-        util::panic_if_failed(error, "MTLDevice::newLibraryWithFile");
+        metal_util::panic_if_failed(error, "MTLDevice::newLibraryWithFile");
 
         auto mesh_function = [library newFunctionWithName: @"mesh_function"];
         auto fragment_function = [library newFunctionWithName:@"fragment_function"];
@@ -72,7 +73,7 @@ namespace metal_3_example {
         mesh_render_pipeline_descriptor.fragmentFunction = fragment_function;
 
         _render_pipeline_state = [_device newRenderPipelineStateWithMeshDescriptor: mesh_render_pipeline_descriptor options: MTLPipelineOptionNone reflection: nullptr error: &error];
-        util::panic_if_failed(error, "MTLDevice::newRenderPipelineStateWithMeshDescriptor");
+        metal_util::panic_if_failed(error, "MTLDevice::newRenderPipelineStateWithMeshDescriptor");
 
         [mesh_render_pipeline_descriptor release];
 
@@ -88,6 +89,8 @@ namespace metal_3_example {
 
     void Engine::render_frame() noexcept {
         @autoreleasepool {
+            _camera.update(0.0003f, _width, _height);
+
             auto surface = [_metal_layer nextDrawable];
 
             auto render_pass_descriptor = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -100,7 +103,10 @@ namespace metal_3_example {
 
             auto render_encoder = [command_buffer renderCommandEncoderWithDescriptor: render_pass_descriptor];
 
+            auto& mvp = _camera.get_view_projection_matrix();
+
             [render_encoder setRenderPipelineState:_render_pipeline_state];
+            [render_encoder setMeshBytes: &mvp length: sizeof(glm::mat4) atIndex: 0];
             [render_encoder drawMeshThreadgroups:MTLSizeMake(1, 1, 1) threadsPerObjectThreadgroup:MTLSizeMake(1, 1, 1) threadsPerMeshThreadgroup:MTLSizeMake(1, 1, 1)];
             [render_encoder endEncoding];
 
@@ -109,7 +115,7 @@ namespace metal_3_example {
         }
     }
 
-    Engine::Engine(bool debug_mode, uint32_t width, uint32_t height) noexcept : _width(width), _height(height) {
+    Engine::Engine(bool debug_mode, uint32_t width, uint32_t height) noexcept : _width(width), _height(height), _camera(glm::vec3(0.0f), glm::vec3(0.0f)) {
         create_window();
         create_renderer();
     }
@@ -125,9 +131,21 @@ namespace metal_3_example {
         SDL_Event ev;
 
         while(running) {
+            SDL_ShowCursor(SDL_DISABLE);
+            SDL_SetWindowGrab(_window, SDL_TRUE);
+            SDL_SetRelativeMouseMode(SDL_TRUE);
+
             while(SDL_PollEvent(&ev)) {
                 if(ev.type == SDL_QUIT) {
                     running = false;
+                }
+                else if(ev.type == SDL_MOUSEMOTION) {
+                    _camera.move_mouse(ev.motion.xrel, ev.motion.yrel);
+                }
+                else if(ev.type == SDL_KEYDOWN) {
+                    if(ev.key.keysym.sym == SDLK_ESCAPE) {
+                        running = false;
+                    }
                 }
             }
 

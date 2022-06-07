@@ -1,5 +1,7 @@
 #pragma once
 
+#include "camera.hpp"
+
 #import <Metal/Metal.h>
 #import <QuartzCore/QuartzCore.h>
 
@@ -18,6 +20,8 @@ namespace metal_3_example {
         id<MTLDevice> _device;
         id<MTLCommandQueue> _command_queue;
         id<MTLRenderPipelineState> _render_pipeline_state;
+
+        Camera _camera;
 
         void create_window() noexcept;
         void destroy_window() noexcept;
