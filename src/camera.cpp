@@ -43,11 +43,11 @@ namespace metal_3_example {
         }
 
         if(keyboard_state[SDL_SCANCODE_SPACE]) {
-            _position.y -= _SPEED * delta_time;
+            _position.y += _SPEED * delta_time;
         }
 
         if(keyboard_state[SDL_SCANCODE_LSHIFT]) {
-            _position.y += _SPEED * delta_time;
+            _position.y -= _SPEED * delta_time;
         }
 
         const auto look_at = _position + util::direction_from_rotation(_rotation);
@@ -63,7 +63,7 @@ namespace metal_3_example {
         if(_rotation.x > glm::two_pi<float>()) _rotation.x = 0.0f;
         else if(_rotation.x < 0.0f) _rotation.x = glm::two_pi<float>();
 
-        _rotation.y += move_position.y;
+        _rotation.y -= move_position.y;
         if(_rotation.y > glm::half_pi<float>() - 0.15f) _rotation.y = glm::half_pi<float>() - 0.15f;
         else if(_rotation.y < 0.15f - glm::half_pi<float>()) _rotation.y = 0.15f - glm::half_pi<float>();
     }

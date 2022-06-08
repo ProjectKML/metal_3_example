@@ -13,7 +13,7 @@ namespace metal_3_example::util {
 
         glm::mat4 result(0.0f);
         result[0][0] = 1.0f / (aspect_ratio * tan_half_fov_y);
-        result[1][1] = -1.0f / (tan_half_fov_y);
+        result[1][1] = 1.0f / (tan_half_fov_y);
         result[2][2] = far_plane / far_minus_near - 1.0f;
         result[2][3] = -1.0f;
         result[3][2] = (far_plane * near_plane) / far_minus_near;
