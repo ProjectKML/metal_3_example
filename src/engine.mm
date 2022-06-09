@@ -45,6 +45,10 @@ namespace metal_3_example {
             util::panic("MTLCreateSystemDefaultDevice");
         }
 
+        if (![_device supportsFamily:MTLGPUFamilyMetal3]) {
+            util::panic("Device does not support metal 3");
+        }
+
         _metal_layer.device = _device;
 
         _command_queue = [_device newCommandQueue];
@@ -74,6 +78,7 @@ namespace metal_3_example {
         depth_texture_descriptor.sampleCount = 1;
         depth_texture_descriptor.arrayLength = 1;
         depth_texture_descriptor.resourceOptions = MTLResourceStorageModePrivate;
+        depth_texture_descriptor.usage = MTLTextureUsageRenderTarget;
 
         _depth_texture = [_device newTextureWithDescriptor: depth_texture_descriptor];
         [depth_texture_descriptor release];
