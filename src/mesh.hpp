@@ -22,7 +22,6 @@ namespace metal_3_example {
             uint32_t data_offset;
             uint32_t vertex_count;
             uint32_t triangle_count;
-            uint32_t _padding;
 
             Meshlet() noexcept = default;
             Meshlet(uint32_t data_offset, uint32_t vertex_count, uint32_t triangle_count) noexcept

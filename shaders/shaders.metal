@@ -32,14 +32,13 @@ struct Meshlet {
     uint data_offset;
     uint vertex_count;
     uint triangle_count;
-    uint padding;
 };
 
 struct VertexOut {
     float4 position [[position]];
-    float2 tex_coord;
-    float3 normal;
-    float3 meshlet_color;
+    float2 tex_coord [[attribute(0)]];
+    float3 normal [[attribute(1)]];
+    float3 meshlet_color [[attribute(2)]];
 };
 
 struct MeshUniforms {
@@ -88,9 +87,9 @@ using mesh_t = mesh<VertexOut, void, 64, 124, topology::triangle>;
 }
 
 struct FSInput {
-    float2 tex_coord;
-    float3 normal;
-    float3 meshlet_color;
+    float2 tex_coord [[attribute(0)]];
+    float3 normal [[attribute(1)]];
+    float3 meshlet_color [[attribute(2)]];
 };
 
 fragment half4 fragment_function(FSInput input [[stage_in]]) {
