@@ -2,8 +2,8 @@
 
 #include "camera.hpp"
 
-#import <Metal/Metal.h>
-#import <QuartzCore/QuartzCore.h>
+#include <Metal/Metal.hpp>
+#include <QuartzCore/QuartzCore.hpp>
 
 #include <SDL2/SDL.h>
 
@@ -15,17 +15,17 @@ namespace metal_3_example {
 
         SDL_Window* _window;
         SDL_MetalView _metal_view;
-        CAMetalLayer* _metal_layer;
+        CA::MetalLayer* _metal_layer;
 
-        id<MTLDevice> _device;
-        id<MTLCommandQueue> _command_queue;
-        id<MTLRenderPipelineState> _render_pipeline_state;
-        id<MTLTexture> _depth_texture;
-        id<MTLDepthStencilState> _depth_stencil_state;
+        MTL::Device* _device;
+        MTL::CommandQueue* _command_queue;
+        MTL::RenderPipelineState* _render_pipeline_state;
+        MTL::Texture* _depth_texture;
+        MTL::DepthStencilState* _depth_stencil_state;
 
-        id<MTLBuffer> _vertex_buffer;
-        id<MTLBuffer> _meshlet_buffer;
-        id<MTLBuffer> _meshlet_data_buffer;
+        MTL::Buffer* _vertex_buffer;
+        MTL::Buffer* _meshlet_buffer;
+        MTL::Buffer* _meshlet_data_buffer;
         size_t _num_meshlets;
 
         Camera _camera;

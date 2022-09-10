@@ -103,7 +103,5 @@ namespace metal_3_example {
 
             new (_meshlets.data() + i) Mesh::Meshlet(data_offset, meshlet.vertex_count, meshlet.triangle_count);
         }
-
-
     }
 }
