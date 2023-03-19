@@ -97,7 +97,7 @@ namespace metal_3_example {
     void Engine::create_pipeline() noexcept {
         NS::Error* error;
 
-        auto library = _device->newLibrary(NS::String::string("shaders.metallib", NS::StringEncoding::UTF8StringEncoding), &error);
+        auto library = _device->newLibrary(NS::String::string("shaders_spv.metallib", NS::StringEncoding::UTF8StringEncoding), &error);
         metal_util::panic_if_failed(error, "MTL::Device::newLibrary");
 
         auto mesh_function = library->newFunction(NS::String::string("mesh_function", NS::StringEncoding::UTF8StringEncoding));
